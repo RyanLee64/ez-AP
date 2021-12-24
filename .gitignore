@@ -1,0 +1,8 @@
+_build/*
+*.exe
+*.o
+/src/.*
+*.cmo
+*.cmi
+/src/testall.log
+/src/log

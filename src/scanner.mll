@@ -1,6 +1,8 @@
 (* Scanner for ezAP language*)
-
-{open Parser}
+{
+open Parser
+exception SyntaxError of string
+}
 
 let digit = ['0' - '9']
 let digits = digit+
@@ -12,10 +14,9 @@ rule token = parse
 (*comments*)
 |   "//"       {s_comment lexbuf}
 |   "/*"       {mult_comment lexbuf}
-|   "new"      {NEW}
-|   '"'        {read_string (Buffer.create 17)}    
-|   "Socket"   {SOCKET}
-|   "String"   {STRING}
+|   '"'        {read_string (Buffer.create 17) lexbuf} 
+
+(*|   "socket"   {SOCKET}*)
 
 
 (*MICRO C TEMPLATE *)
@@ -39,6 +40,7 @@ rule token = parse
 | "&&"     { AND }
 | "||"     { OR }
 | "!"      { NOT }
+| "str"      { STRING }
 | "if"     { IF }
 | "else"   { ELSE }
 | "for"    { FOR }
@@ -61,15 +63,15 @@ rule token = parse
 
 and s_comment = parse
     "\n"    {token lexbuf}
-|   _       {scomment lexbuf}
+|   _       {s_comment lexbuf}
 
 and mult_comment = parse
   "*/" { token lexbuf }
-| _    { multcomment lexbuf }
+| _    { mult_comment lexbuf }
 
-and read_str buf =
+and read_string buf =
   parse
-  | '"'       { STRLIT (Buffer.contents buf) }
+  | '"'       { STR (Buffer.contents buf) }
   | '\\' '/'  { Buffer.add_char buf '/'; read_string buf lexbuf }
   | '\\' '\\' { Buffer.add_char buf '\\'; read_string buf lexbuf }
   | '\\' 'b'  { Buffer.add_char buf '\b'; read_string buf lexbuf }
