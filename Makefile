@@ -11,8 +11,9 @@ test : all
 # to test linking external code
 
 .PHONY : all
-all : 
+all : clean
 	cd $(SRC) && dune build
+	ln -s ./_build/default/src/ezap.exe ezap.exe
 	cd $(LIB) && make
 
 # "make microc.native" compiles the compiler

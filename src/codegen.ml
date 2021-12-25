@@ -31,6 +31,7 @@ let translate (globals, functions) =
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
+  and str_t      = L.pointer_type (L.i8_type context)
   and void_t     = L.void_type   context in
 
   (* Return the LLVM type for a MicroC type *)
@@ -39,6 +40,7 @@ let translate (globals, functions) =
     | A.Bool  -> i1_t
     | A.Float -> float_t
     | A.Void  -> void_t
+    | A.String -> str_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -59,7 +61,10 @@ let translate (globals, functions) =
       L.function_type i32_t [| i32_t |] in
   let printbig_func : L.llvalue =
       L.declare_function "printbig" printbig_t the_module in
-
+  let create_new_str_t: L.lltype =
+      L.function_type str_t [| str_t |] in
+  let create_new_str_func: L.llvalue  =
+      L.declare_function "create_new_str" create_new_str_t the_module in
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
@@ -112,6 +117,8 @@ let translate (globals, functions) =
 	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SFliteral l -> L.const_float_of_string float_t l
+      | SStrLiteral s -> L.build_call create_new_str_func [| L.build_global_stringptr s "tempptr"
+      builder |] "strlit" builder
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in

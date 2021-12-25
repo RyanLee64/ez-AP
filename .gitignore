@@ -6,3 +6,7 @@ _build/*
 *.cmi
 /src/testall.log
 /src/log
+*.ll
+*.log
+*.a
+*.swp

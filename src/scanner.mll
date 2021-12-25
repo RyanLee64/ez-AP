@@ -11,7 +11,7 @@ let newline = '\r' | '\n' | "\r\n"
 let whitespace = whitespace_chars | newline
 rule token = parse 
     whitespace {token lexbuf} (*eat whitespace*)
-(*comments*)
+(*comments/strings*)
 |   "//"       {s_comment lexbuf}
 |   "/*"       {mult_comment lexbuf}
 |   '"'        {read_string (Buffer.create 17) lexbuf} 
@@ -40,7 +40,7 @@ rule token = parse
 | "&&"     { AND }
 | "||"     { OR }
 | "!"      { NOT }
-| "str"      { STRING }
+| "str"    { STRING }
 | "if"     { IF }
 | "else"   { ELSE }
 | "for"    { FOR }
@@ -71,7 +71,7 @@ and mult_comment = parse
 
 and read_string buf =
   parse
-  | '"'       { STR (Buffer.contents buf) }
+  | '"'       { STRLIT (Buffer.contents buf) }
   | '\\' '/'  { Buffer.add_char buf '/'; read_string buf lexbuf }
   | '\\' '\\' { Buffer.add_char buf '\\'; read_string buf lexbuf }
   | '\\' 'b'  { Buffer.add_char buf '\b'; read_string buf lexbuf }

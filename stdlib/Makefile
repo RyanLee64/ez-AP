@@ -1,6 +1,6 @@
 CC := gcc
 CFLAGS := -Wall -g
-OBJS := printbig.o
+OBJS := printbig.o stringops.c
 DEPENDS := 
 
 # clean up object files cause we don't need them
