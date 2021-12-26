@@ -1,0 +1,8 @@
+int main(){
+	str s;
+	str t;
+	str u;
+	s = "hello";
+	t = "world";
+	u = s+t;
+}	

@@ -32,9 +32,6 @@ all : clean
 clean :
 	ocamlbuild -clean
 	rm -rf testall.log ocamlllvm *.diff
-ifeq ($(wildcard $(EXE)),)
-	rm ezap.exe
-endif
 
 # Testing the "printbig" example
 
@@ -47,7 +44,7 @@ TESTS = \
   add1 arith1 arith2 arith3 fib float1 float2 float3 for1 for2 func1 \
   func2 func3 func4 func5 func6 func7 func8 func9 gcd2 gcd global1 \
   global2 global3 hello if1 if2 if3 if4 if5 if6 local1 local2 ops1 \
-  ops2 printbig var1 var2 while1 while2
+  ops2 printbig var1 var2 while1 while2 strassign strcat strprint
 
 FAILS = \
   assign1 assign2 assign3 dead1 dead2 expr1 expr2 expr3 float1 float2 \
