@@ -61,10 +61,17 @@ let translate (globals, functions) =
       L.function_type i32_t [| i32_t |] in
   let printbig_func : L.llvalue =
       L.declare_function "printbig" printbig_t the_module in
-  let create_new_str_t: L.lltype =
+
+  let createstr_t: L.lltype =
       L.function_type str_t [| str_t |] in
-  let create_new_str_func: L.llvalue  =
-      L.declare_function "create_new_str" create_new_str_t the_module in
+  let createstr_func: L.llvalue  =
+      L.declare_function "createstr" createstr_t the_module in
+
+  let add_strs_t: L.lltype = 
+    L.function_type str_t [|str_t; str_t|] in 
+  let add_strs_func: L.llvalue = 
+    L.declare_function "add_strs" add_strs_t the_module in 
+
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
@@ -82,7 +89,8 @@ let translate (globals, functions) =
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
-    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder in
+    and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder 
+    and str_format_str = L.build_global_stringptr   "%s\n" "fmt" builder in
 
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
@@ -117,8 +125,9 @@ let translate (globals, functions) =
 	SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SFliteral l -> L.const_float_of_string float_t l
-      | SStrLiteral s -> L.build_call create_new_str_func [| L.build_global_stringptr s "tempptr"
-      builder |] "strlit" builder
+      | SStrLiteral s -> 
+        let temp = L.build_global_stringptr s "temp_assign_ptr" builder in
+        L.build_call createstr_func [| temp |] "strlit" builder 
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
@@ -140,6 +149,14 @@ let translate (globals, functions) =
 	  | A.And | A.Or ->
 	      raise (Failure "internal error: semant should have rejected and/or on float")
 	  ) e1' e2' "tmp" builder
+      | SBinop ((A.String,_) as e1, op, e2) ->
+    let e1' = expr builder e1
+    and e2' = expr builder e2 in
+    (match op with
+      A.Add     -> L.build_call add_strs_func[|e1'; e2'|] "strcat" builder
+      (*add additional string operations  *)
+      | _ -> 	raise (Failure "unsupported string operation")
+    ) 
       | SBinop (e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
@@ -156,7 +173,7 @@ let translate (globals, functions) =
 	  | A.Leq     -> L.build_icmp L.Icmp.Sle
 	  | A.Greater -> L.build_icmp L.Icmp.Sgt
 	  | A.Geq     -> L.build_icmp L.Icmp.Sge
-	  ) e1' e2' "tmp" builder
+	  ) e1' e2' "tmp" builder 
       | SUnop(op, ((t, _) as e)) ->
           let e' = expr builder e in
 	  (match op with
@@ -171,6 +188,9 @@ let translate (globals, functions) =
       | SCall ("printf", [e]) -> 
 	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
 	    "printf" builder
+      | SCall ("prints", [e]) ->
+    L.build_call printf_func [| str_format_str ; (expr builder e) |]
+      "printf" builder 
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in

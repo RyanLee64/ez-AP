@@ -24,4 +24,4 @@ Run() {
 
     Run "$MICROC" "$1" ">" "${basename}.ll" &&
     Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
-    Run "$CC" "-o" "${basename}.exe" "${basename}.s" "../stdlib/ezaplib-main.a"
+    Run "$CC" "-o" "${basename}.exe" "${basename}.s" "./stdlib/ezaplib-main.a"

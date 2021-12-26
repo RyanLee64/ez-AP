@@ -2,6 +2,8 @@
 LIB = ./stdlib
 TEST = ./tests
 SRC = ./src
+EXE = /usr/local/myFileVer1
+
 
 .PHONY : test
 test : all 
@@ -30,6 +32,9 @@ all : clean
 clean :
 	ocamlbuild -clean
 	rm -rf testall.log ocamlllvm *.diff
+ifeq ($(wildcard $(EXE)),)
+	rm ezap.exe
+endif
 
 # Testing the "printbig" example
 
