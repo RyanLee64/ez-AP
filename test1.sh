@@ -1,4 +1,5 @@
 #!/bin/sh
+#script for running just one test at a time before adding to official test suite
 LLI="lli"
 LLC="llc"
 CC="cc"
