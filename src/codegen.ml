@@ -70,7 +70,7 @@ let translate (globals, functions) =
   let add_strs_t: L.lltype = 
     L.function_type str_t [|str_t; str_t|] in 
   let add_strs_func: L.llvalue = 
-    L.declare_function "add_strs" add_strs_t the_module in 
+    L.declare_function "concatstrs" add_strs_t the_module in 
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)

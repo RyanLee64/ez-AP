@@ -33,10 +33,16 @@ let check (globals, functions) =
 
   (* Collect function declarations for built-in functions: no bodies *)
   let built_in_decls = 
-    let add_bind map (name, ty) = StringMap.add name {
+    let add_bind map (name, ty) =
+      let formals = 
+        (*janky pattern match will fix time permitting*)
+        match name with
+        "createstr" -> [(ty,"x1");(ty,"x2")] 
+        |_           -> [(ty,"x")] in 
+      StringMap.add name {
       typ = Void;
       fname = name; 
-      formals = [(ty, "x")];
+      formals = formals;
       locals = []; body = [] } map
     in List.fold_left add_bind StringMap.empty [ ("print", Int);
 			                         ("printb", Bool);

@@ -1,6 +1,10 @@
 int main(){
 str s;
+str t;
+str u;
 s = "word";
-prints(s);
+t = "hello";
+u = t+s;
+prints(u);
 }
 
