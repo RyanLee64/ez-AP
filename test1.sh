@@ -21,7 +21,7 @@ Run() {
     }
 }
     basename=`echo $1 | sed 's/.*\\///
-                             s/.mc//'`
+                             s/.ez//'`
 
     Run "$MICROC" "$1" ">" "${basename}.ll" &&
     Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&

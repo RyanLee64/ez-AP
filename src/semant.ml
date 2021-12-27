@@ -76,6 +76,10 @@ let check (globals, functions) =
 
   let _ = find_func "main" in (* Ensure "main" is defined *)
 
+  
+      
+
+
   let check_function func =
     (* Make sure no formals or locals are void or duplicates *)
     check_binds "formal" func.formals;
@@ -161,7 +165,18 @@ let check (globals, functions) =
       and err = "expected Boolean expression in " ^ string_of_expr e
       in if t' != Bool then raise (Failure err) else (t', e') 
     in
-
+    let check_return (ret_type: typ) (body_statements: stmt list) =
+      match ret_type with
+        Void ->  () (*no return statement needed for void function *)
+       | _ -> 
+        let return_statement = List.hd (List.rev body_statements) in
+        match return_statement with
+         Return e -> 
+          let evaluated = expr e in 
+          if fst evaluated != ret_type then raise(Failure("return type does not match")) else ()
+        | _ -> raise (Failure ("non-void function without return statement"))
+         in
+    check_return func.typ func.body;
     (* Return a semantically-checked statement i.e. containing sexprs *)
     let rec check_stmt = function
         Expr e -> SExpr (expr e)
