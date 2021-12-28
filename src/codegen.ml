@@ -132,7 +132,14 @@ let translate (globals, functions) =
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
+      | SPAssign (s, e) -> 
+        let old_str = L.build_load (lookup s) s builder in 
+        let e' = expr builder e in 
+        let new_str  = L.build_call add_strs_func[|old_str; e'|] "strcat" builder in 
+        L.build_store new_str (lookup s) builder
+        
       | SBinop ((A.Float,_ ) as e1, op, e2) ->
+    
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
 	  (match op with 

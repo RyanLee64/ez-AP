@@ -6,4 +6,5 @@ int main(){
 	t = "world";
 	u = s+t;
 	prints(u);
+	return 0;
 }	

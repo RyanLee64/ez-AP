@@ -1,7 +1,7 @@
 (* Abstract Syntax Tree and functions for printing it *)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or
+          And | Or 
 
 type uop = Neg | Not
 
@@ -19,6 +19,7 @@ type expr =
   | Unop of uop * expr
   | Assign of string * expr
   | Call of string * expr list
+  | PAssign of string * expr
   | Noexpr
 
 type stmt =
@@ -28,6 +29,7 @@ type stmt =
   | If of expr * stmt * stmt
   | For of expr * expr * expr * stmt
   | While of expr * stmt
+
 
 type func_decl = {
     typ : typ;
@@ -73,6 +75,7 @@ let rec string_of_expr = function
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
+  | PAssign(v, e) -> v ^ " += " ^ string_of_expr e
 
 let rec string_of_stmt = function
     Block(stmts) ->
@@ -86,6 +89,7 @@ let rec string_of_stmt = function
       "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
       string_of_expr e3  ^ ") " ^ string_of_stmt s
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
+
 
 let string_of_typ = function
     Int -> "int"

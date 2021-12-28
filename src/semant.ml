@@ -110,12 +110,17 @@ let check (globals, functions) =
       | StrLiteral s ->(String, SStrLiteral s)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
-      | Assign(var, e) as ex -> 
+      | Assign(var, e) | PAssign(var,e) as ex-> 
           let lt = type_of_identifier var
           and (rt, e') = expr e in
           let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^ 
             string_of_typ rt ^ " in " ^ string_of_expr ex
-          in (check_assign lt rt err, SAssign(var, (rt, e')))
+          in (check_assign lt rt err, 
+          match ex with 
+            PAssign(_, _) -> SPAssign(var, (rt, e'))
+            |Assign(_,_) -> SAssign(var, (rt, e'))
+            | _ -> raise (Failure ("bad assignment"))
+          )
       | Unop(op, e) as ex -> 
           let (t, e') = expr e in
           let ty = match op with
@@ -189,7 +194,6 @@ let check (globals, functions) =
         else raise (
 	  Failure ("return gives " ^ string_of_typ t ^ " expected " ^
 		   string_of_typ func.typ ^ " in " ^ string_of_expr e))
-	    
 	    (* A block is correct if each statement is correct and nothing
 	       follows any Return statement.  Nested blocks are flattened. *)
       | Block sl -> 

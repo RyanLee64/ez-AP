@@ -4,7 +4,7 @@ OBJS := printbig.o stringops.o
 DEPENDS := 
 
 # clean up object files cause we don't need them
-ezaplib-main.a: stdlib 
+ezaplib-main.a: clean stdlib 
 	ar -cq ezaplib-main.a *.o
 	rm -f *.o
 
@@ -20,6 +20,6 @@ stdlib: $(OBJS)
 clean:
 	rm -f *.o *.a
 
-all: clean ezaplib.a
+all: clean ezaplib-main.a
 
 .PHONY: clean all

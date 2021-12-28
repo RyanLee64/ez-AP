@@ -33,6 +33,8 @@ rule token = parse
 | '='      { ASSIGN }
 | "=="     { EQ }
 | "!="     { NEQ }
+| "+="     { ADDASSIGN }
+| "@"      { CAT } 
 | '<'      { LT }
 | "<="     { LEQ }
 | ">"      { GT }
@@ -86,12 +88,3 @@ and read_string buf =
   | _ { raise (SyntaxError ("Illegal string character: " ^ Lexing.lexeme lexbuf)) }
   | eof { raise (SyntaxError ("String is not terminated")) }
 
-  (*
-12/19 STATUS
-1. Lexing strings, comments both single/mutli
-2. Added in new, String, Socket keywordss
-3. Need to determine what if anything to do special with
-functions like connect/the rest of the socket ops
-4. Need to check over proposal and look for additional 
-differences that need to be lexed accordingly 
-  *)

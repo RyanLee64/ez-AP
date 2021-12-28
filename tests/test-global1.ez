@@ -19,7 +19,7 @@ void incab()
 
 int main()
 {
-  a = 42;
+  a = 2;
   b = 21;
   printa();
   printbb();
