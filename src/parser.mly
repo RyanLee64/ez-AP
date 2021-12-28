@@ -16,16 +16,14 @@ open Ast
 
 %start program
 %type <Ast.program> program
-
 %nonassoc NOELSE
 %nonassoc ELSE
-%left  CAT
-%right ASSIGN ADDASSIGN 
-%left OR
-%left AND
+%right ASSIGN ADDASSIGN
+%left OR 
+%left AND 
 %left EQ NEQ 
 %left LT GT LEQ GEQ
-%left PLUS MINUS
+%left PLUS MINUS CAT
 %left TIMES DIVIDE
 %right NOT
 
@@ -96,6 +94,7 @@ expr:
   | BLIT             { BoolLit($1)            }
   | ID               { Id($1)                 }
   | STRLIT           { StrLiteral ($1)        }
+  | expr CAT    expr { Binop($1, Charat,$3)   }  
   | expr PLUS   expr { Binop($1, Add,   $3)   }
   | expr MINUS  expr { Binop($1, Sub,   $3)   }
   | expr TIMES  expr { Binop($1, Mult,  $3)   }
@@ -108,7 +107,6 @@ expr:
   | expr GEQ    expr { Binop($1, Geq,   $3)   }
   | expr AND    expr { Binop($1, And,   $3)   }
   | expr OR     expr { Binop($1, Or,    $3)   }
-  /*| expr CAT    expr { Binop($1, Charat,$3)   }*/  
   | MINUS expr %prec NOT { Unop(Neg, $2)      }
   | NOT expr         { Unop(Not, $2)          }
   | ID ASSIGN expr   { Assign($1, $3)         }

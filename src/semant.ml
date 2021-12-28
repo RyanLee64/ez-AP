@@ -37,7 +37,7 @@ let check (globals, functions) =
       let formals = 
         (*janky pattern match will fix time permitting*)
         match name with
-        "createstr" -> [(ty,"x1");(ty,"x2")] 
+        "createstr" | "charat" -> [(ty,"x1");(ty,"x2")] 
         |_           -> [(ty,"x")] in 
       StringMap.add name {
       typ = Void;
@@ -49,7 +49,8 @@ let check (globals, functions) =
                                ("prints", String);
 			                         ("printf", Float);
 			                         ("printbig", Int);
-                               ("createstr", String) ]
+                               ("createstr", String);
+                               ("charat",   String) ]
   in
 
   (* Add function name to symbol table *)
@@ -144,6 +145,8 @@ let check (globals, functions) =
           | Less | Leq | Greater | Geq
                      when same && (t1 = Int || t1 = Float) -> Bool
           | And | Or when same && t1 = Bool -> Bool
+          (*charat has a str on LHS and an int on RHS *)
+          | Charat   when t1 = String && t2 = Int -> String 
           | _ -> raise (
 	      Failure ("illegal binary operator " ^
                        string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^

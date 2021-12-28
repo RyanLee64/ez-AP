@@ -71,6 +71,11 @@ let translate (globals, functions) =
     L.function_type str_t [|str_t; str_t|] in 
   let add_strs_func: L.llvalue = 
     L.declare_function "concatstrs" add_strs_t the_module in 
+  
+  let char_at_t: L.lltype = 
+    L.function_type str_t [|str_t; i32_t|] in 
+  let char_at_func: L.llvalue = 
+    L.declare_function "charatstr" char_at_t the_module in 
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -153,7 +158,7 @@ let translate (globals, functions) =
 	  | A.Leq     -> L.build_fcmp L.Fcmp.Ole
 	  | A.Greater -> L.build_fcmp L.Fcmp.Ogt
 	  | A.Geq     -> L.build_fcmp L.Fcmp.Oge
-	  | A.And | A.Or ->
+	  | A.And | A.Or | A.Charat->
 	      raise (Failure "internal error: semant should have rejected and/or on float")
 	  ) e1' e2' "tmp" builder
       | SBinop ((A.String,_) as e1, op, e2) ->
@@ -161,6 +166,7 @@ let translate (globals, functions) =
     and e2' = expr builder e2 in
     (match op with
       A.Add     -> L.build_call add_strs_func[|e1'; e2'|] "strcat" builder
+     | A.Charat ->  L.build_call char_at_func[|e1'; e2' |] "charat" builder
       (*add additional string operations  *)
       | _ -> 	raise (Failure "unsupported string operation")
     ) 
@@ -180,6 +186,7 @@ let translate (globals, functions) =
 	  | A.Leq     -> L.build_icmp L.Icmp.Sle
 	  | A.Greater -> L.build_icmp L.Icmp.Sgt
 	  | A.Geq     -> L.build_icmp L.Icmp.Sge
+    | _ -> 	raise (Failure "unsupported int operation semant should have rejected")
 	  ) e1' e2' "tmp" builder 
       | SUnop(op, ((t, _) as e)) ->
           let e' = expr builder e in
