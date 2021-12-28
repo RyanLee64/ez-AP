@@ -1,0 +1,13 @@
+
+void bar(){
+	int x;
+	x = 1;
+	//no need for return with void 
+}
+
+int main()
+{
+	bar();
+	return 0;
+}
+

@@ -1,0 +1,4 @@
+//should fail with no return statement
+int main(){
+	x = 1;
+}
