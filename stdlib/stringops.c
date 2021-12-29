@@ -2,12 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-
-char *createstr(char *input);
-
-char *concatstrs(const char *str1, const char* str2);
-
-char *charatstr(const char* str1, int i);
+#include "stringops.h"
 
 char *createstr(char *input){
     int len = strlen(input);
@@ -24,8 +19,7 @@ char *concatstrs(const char *str1, const char *str2){
 }
 
 //Return a null-terminated string of length 2 with index 0 equal to the char
-char *charatstr(const char *str1, int i )
-{
+char *charatstr(const char *str1, int i ){
     int len = strlen(str1);
     //in the event the user passs an out of bounds integer
     if(i > len){

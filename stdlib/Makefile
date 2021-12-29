@@ -1,7 +1,7 @@
 CC := gcc
 CFLAGS := -Wall -g
 OBJS := printbig.o stringops.o
-DEPENDS := 
+DEPENDS := stringops.h
 
 # clean up object files cause we don't need them
 ezaplib-main.a: clean stdlib 
