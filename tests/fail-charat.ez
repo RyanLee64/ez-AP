@@ -1,0 +1,9 @@
+//incorrect types for charat op
+int main(){
+	str s;
+	str i;
+	s = "hello";
+	i = 1@10;
+	prints(i);
+	return 1;
+}
