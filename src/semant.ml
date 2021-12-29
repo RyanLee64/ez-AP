@@ -2,8 +2,9 @@
 
 open Ast
 open Sast
-
+open String
 module StringMap = Map.Make(String)
+
 
 (* Semantic checking of the AST. Returns an SAST if successful,
    throws an exception if something is wrong.
@@ -50,8 +51,9 @@ let check (globals, functions) =
 			                         ("printf", Float);
 			                         ("printbig", Int);
                                ("createstr", String);
-                               ("charat",   String) ]
-  in
+                               ("charat",   String);
+                               ("checkstreq", Bool)]
+                                in
 
   (* Add function name to symbol table *)
   let add_func map fd = 
@@ -140,13 +142,14 @@ let check (globals, functions) =
           let ty = match op with
             Add | Sub | Mult | Div when same && t1 = Int   -> Int
           | Add | Sub | Mult | Div when same && t1 = Float -> Float
-          | Add                    when same && t1 = String -> String
+          | Add                   when same && t1 = String -> String
+          | Equal                  when same && t1 = String -> Bool 
           | Equal | Neq            when same               -> Bool
           | Less | Leq | Greater | Geq
                      when same && (t1 = Int || t1 = Float) -> Bool
           | And | Or when same && t1 = Bool -> Bool
-          (*charat has a str on LHS and an int on RHS *)
-          | Charat   when t1 = String && t2 = Int -> String 
+          (*charat has a strlit/id on LHS and an int on RHS *)
+          | Charat   when t1 = String && t2 = Int  -> String
           | _ -> raise (
 	      Failure ("illegal binary operator " ^
                        string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^

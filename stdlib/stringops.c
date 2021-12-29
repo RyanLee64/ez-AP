@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 
 char *createstr(char *input);
 
@@ -27,7 +28,11 @@ char *charatstr(const char *str1, int i )
 {
     int len = strlen(str1);
     //in the event the user passs an out of bounds integer
-    if(i > len) return "";
+    if(i > len){
+        errno = EPERM;
+        perror("invalid index:");
+        return 0;  
+    } 
     else
     {
         char c = *(str1+i);
@@ -38,6 +43,12 @@ char *charatstr(const char *str1, int i )
         return ret;
     }
 }
+
+char checkstreq(const char *str1, const char *str2){
+    if(strcmp(str1,str2) != 0) return 0;
+    else return 1;
+}
+
 
 
 

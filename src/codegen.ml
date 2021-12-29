@@ -18,6 +18,7 @@ open Sast
 
 module StringMap = Map.Make(String)
 
+
 (* translate : Sast.program -> Llvm.module *)
 let translate (globals, functions) =
   let context    = L.global_context () in
@@ -76,6 +77,12 @@ let translate (globals, functions) =
     L.function_type str_t [|str_t; i32_t|] in 
   let char_at_func: L.llvalue = 
     L.declare_function "charatstr" char_at_t the_module in 
+  
+  let check_str_eq_t: L.lltype = 
+    L.function_type i1_t [|str_t; str_t|] in 
+  let check_str_func: L.llvalue = 
+    L.declare_function "checkstreq" check_str_eq_t the_module in 
+
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -131,8 +138,8 @@ let translate (globals, functions) =
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
       | SFliteral l -> L.const_float_of_string float_t l
       | SStrLiteral s -> 
-        let temp = L.build_global_stringptr s "temp_assign_ptr" builder in
-        L.build_call createstr_func [| temp |] "strlit" builder 
+        let temp = L.build_global_stringptr s "temp_assign_ptr" builder in 
+        L.build_call createstr_func [| temp |] "strlit" builder
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
@@ -165,10 +172,11 @@ let translate (globals, functions) =
     let e1' = expr builder e1
     and e2' = expr builder e2 in
     (match op with
-      A.Add     -> L.build_call add_strs_func[|e1'; e2'|] "strcat" builder
-     | A.Charat ->  L.build_call char_at_func[|e1'; e2' |] "charat" builder
-      (*add additional string operations  *)
-      | _ -> 	raise (Failure "unsupported string operation")
+      A.Add     -> L.build_call add_strs_func[|e1'; e2'|] "strcat" builder 
+     | A.Charat -> L.build_call char_at_func[|e1'; e2'|] "charat" builder
+     | A.Equal  -> L.build_call check_str_func[|e1'; e2'|] "equality" builder
+
+    | _ -> 	raise (Failure "unsupported string operation")
     ) 
       | SBinop (e1, op, e2) ->
 	  let e1' = expr builder e1

@@ -1,0 +1,12 @@
+//strings are equal 1 is printed to stdout
+int main(){
+
+	bool b;
+	str s;
+	str t;
+	s = "hello";
+	t = "hello";
+	b = s == t;
+	printb(b);
+	return 0;
+}
