@@ -148,6 +148,7 @@ let translate (globals, functions) =
         let old_str = L.build_load (lookup s) s builder in 
         let e' = expr builder e in 
         let new_str  = L.build_call add_strs_func[|old_str; e'|] "strcat" builder in 
+        ignore(L.build_free old_str builder);
         L.build_store new_str (lookup s) builder
         
       | SBinop ((A.Float,_ ) as e1, op, e2) ->
