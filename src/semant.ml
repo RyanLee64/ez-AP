@@ -195,7 +195,19 @@ let check (globals, functions) =
       | For(e1, e2, e3, st) ->
 	  SFor(expr e1, check_bool_expr e2, expr e3, check_stmt st)
       | While(p, s) -> SWhile(check_bool_expr p, check_stmt s)
-      | Context(e1,e2, s) -> SContext(expr e1, expr e2, check_stmt s)
+      | Context(e1,e2, s) -> 
+        let (t1, e1') = expr e1 
+        and (t2, _) = expr e2 in
+        let same = t1 = t2 in
+          (match (t1,e1') with 
+          (String, (SId _) ) -> 
+            (match (t2) with
+            (*TODO ADD SOCKET ONCE SOCKET IS BUILT OUT*)
+              String ->  if same then SContext(expr e1, expr e2, check_stmt s) else 
+                raise(Failure "type of resource and variable do not match")
+              |_-> raise(Failure "resource expression must evaluate to a socket or str"))
+            |_-> raise(Failure "must assign expression to an id of type socket or str"))
+            
       | Return e -> let (t, e') = expr e in
         if t = func.typ then SReturn (t, e') 
         else raise (
