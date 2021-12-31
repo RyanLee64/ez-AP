@@ -23,6 +23,7 @@ type sstmt =
   | SIf of sexpr * sstmt * sstmt
   | SFor of sexpr * sexpr * sexpr * sstmt
   | SWhile of sexpr * sstmt
+  | SContext of sexpr * sexpr * sstmt
 
 type sfunc_decl = {
     styp : typ;
@@ -67,6 +68,8 @@ let rec string_of_sstmt = function
       "for (" ^ string_of_sexpr e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
       string_of_sexpr e3  ^ ") " ^ string_of_sstmt s
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
+  | SContext(e1,e2,s) ->
+    "With "^ string_of_sexpr e1 ^ "as "^string_of_sexpr e2 ^ string_of_sstmt s
 
 let string_of_sfdecl fdecl =
   string_of_typ fdecl.styp ^ " " ^
@@ -79,3 +82,4 @@ let string_of_sfdecl fdecl =
 let string_of_sprogram (vars, funcs) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_sfdecl funcs)
+

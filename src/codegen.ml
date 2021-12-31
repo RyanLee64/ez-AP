@@ -227,6 +227,7 @@ let translate (globals, functions) =
        instruction that transfers control.  This function runs "instr builder"
        if the current block does not already have a terminator.  Used,
        e.g., to handle the "fall off the end of the function" case. *)
+       (*NOTE: stmt add_terminal different that function add_terminal*)
     let add_terminal builder instr =
       match L.block_terminator (L.insertion_block builder) with
 	Some _ -> ()
@@ -260,6 +261,39 @@ let translate (globals, functions) =
 
 	 ignore(L.build_cond_br bool_val then_bb else_bb builder);
 	 L.builder_at_end context merge_bb
+      | SContext(((typ, v)), resource,  body) ->
+        (match v with 
+        SId s ->  
+          (*bb for cleaning up resources*)
+          let cleanup_bb = L.append_block context "clean" the_function in 
+
+          (*bb for exucuting the statements in the body of the with statement*)
+          let body_bb = L.append_block context "body" the_function in 
+
+
+          let evaluated_resource = expr builder resource in 
+          (*so while the value s maps to might change this pointer will not as we control it*)
+          let pointer = L.build_alloca (ltype_of_typ typ) "contextptr" builder in
+          (*store the evaluated resource in our pointer for later and in our symbol tabl*)
+          ignore(L.build_store evaluated_resource pointer builder);
+          ignore(L.build_store evaluated_resource (lookup s) builder);
+          ignore(L.build_br body_bb builder);
+          
+          (*cleanup routine*)
+          let builder1 = L.builder_at_end context cleanup_bb in 
+
+          let lookup = L.build_load pointer "cleanup_load" builder1 in 
+          ignore(L.build_free lookup builder1);
+          
+          (*body routine*)
+          ignore(stmt (L.builder_at_end context body_bb) body); 
+          ignore(L.build_br cleanup_bb (L.builder_at_end context body_bb));
+  
+          (*return the cleanup builder to continue building the module*)
+          builder1
+
+        |__-> raise(Failure "semant should have caught that this is not assignable"))
+        
 
       | SWhile (predicate, body) ->
 	  let pred_bb = L.append_block context "while" the_function in

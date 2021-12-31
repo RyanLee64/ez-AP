@@ -29,6 +29,7 @@ type stmt =
   | If of expr * stmt * stmt
   | For of expr * expr * expr * stmt
   | While of expr * stmt
+  | Context of expr * expr * stmt 
 
 
 type func_decl = {
@@ -90,6 +91,9 @@ let rec string_of_stmt = function
       "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
       string_of_expr e3  ^ ") " ^ string_of_stmt s
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
+  | Context(e1,e2,s) -> 
+    "With "^ string_of_expr e1 ^ "as "^string_of_expr e2 ^ string_of_stmt s
+
 
 
 let string_of_typ = function
