@@ -1,0 +1,21 @@
+//no leak reported by valgrind for both context managers
+
+int main(){
+	str s;
+	int i;
+	int p;
+	if(i == 2){
+	i = 3;
+}
+//cannot use an int variable in context manager
+with s as ("world"){
+	i =4;
+	prints(s);
+}
+
+with p as ("hello"){
+	prints(p);
+}
+
+return 0;
+}

@@ -1,0 +1,21 @@
+//no leak reported by valgrind for both context managers
+
+int main(){
+	str s;
+	int i;
+	str p;
+	if(i == 2){
+	i = 3;
+}
+//resource expression cannot evaluate to an int
+with s as (1){
+	i =4;
+	prints(s);
+}
+
+with p as ("hello"){
+	prints(p);
+}
+
+return 0;
+}
