@@ -1,0 +1,20 @@
+//no leak reported by valgrind for both context managers
+
+int main(){
+	str s;
+	int i;
+	str p;
+	if(i == 2){
+	i = 3;
+}
+with s as ("word"){
+	i =4;
+	prints(s);
+}
+
+with p as ("hello"){
+	prints(p);
+}
+
+return 0;
+}
