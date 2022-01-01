@@ -16,14 +16,14 @@ rule token = parse
 |   "/*"       {mult_comment lexbuf}
 |   '"'        {read_string (Buffer.create 17) lexbuf} 
 
-(*|   "socket"   {SOCKET}*)
-
+(* |   "socket"   {SOCKET} *)
 
 (*MICRO C TEMPLATE *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
 | '{'      { LBRACE }
 | '}'      { RBRACE }
+| '''      { APOSTROPHE } 
 | ';'      { SEMI }
 | ','      { COMMA }
 | '+'      { PLUS }
@@ -63,15 +63,16 @@ rule token = parse
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
-
-
-and s_comment = parse
-    "\n"    {token lexbuf}
-|   _       {s_comment lexbuf}
-
 and mult_comment = parse
   "*/" { token lexbuf }
 | _    { mult_comment lexbuf }
+
+and s_comment = parse
+    "\n"    {token lexbuf}
+|   "\r\n"  {token lexbuf} (*windows support*)
+|   _       {s_comment lexbuf}
+
+
 
 and read_string buf =
   parse

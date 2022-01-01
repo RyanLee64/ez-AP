@@ -42,6 +42,7 @@ let translate (globals, functions) =
     | A.Float -> float_t
     | A.Void  -> void_t
     | A.String -> str_t
+    | A.Char   -> i8_t
   in
 
   (* Create a map of global variables after creating each *)
@@ -141,6 +142,7 @@ let translate (globals, functions) =
         let temp = L.build_global_stringptr s "temp_assign_ptr" builder in 
         L.build_call createstr_func [| temp |] "strlit" builder
       | SNoexpr     -> L.const_int i32_t 0
+      | SCharLiteral c -> L.const_int i8_t c 
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'

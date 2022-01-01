@@ -5,7 +5,7 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type typ = Int | Bool | Float | Void | String 
+type typ = Int | Bool | Float | Void | String | Char
 
 type bind = typ * string
 
@@ -14,6 +14,7 @@ type expr =
   | Fliteral of string
   | StrLiteral of string
   | BoolLit of bool
+  | CharLiteral of int
   | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
@@ -78,6 +79,7 @@ let rec string_of_expr = function
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
   | PAssign(v, e) -> v ^ " += " ^ string_of_expr e
+  | CharLiteral(c) -> string_of_int c
 
 let rec string_of_stmt = function
     Block(stmts) ->
@@ -102,6 +104,7 @@ let string_of_typ = function
   | Float -> "float"
   | Void -> "void"
   | String -> "string"
+  | Char  ->  "char"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

@@ -113,6 +113,7 @@ let check (globals, functions) =
       | StrLiteral s ->(String, SStrLiteral s)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
+      | CharLiteral c -> (Char, SCharLiteral c)
       | Assign(var, e) | PAssign(var,e) as ex-> 
           let lt = type_of_identifier var
           and (rt, e') = expr e in
@@ -195,6 +196,7 @@ let check (globals, functions) =
       | For(e1, e2, e3, st) ->
 	  SFor(expr e1, check_bool_expr e2, expr e3, check_stmt st)
       | While(p, s) -> SWhile(check_bool_expr p, check_stmt s)
+      (*context semantic check*)
       | Context(e1,e2, s) -> 
         let (t1, e1') = expr e1 
         and (t2, _) = expr e2 in

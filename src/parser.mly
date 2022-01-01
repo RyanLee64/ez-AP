@@ -5,11 +5,11 @@ open Ast
 %}
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE ASSIGN
-%token NOT EQ NEQ LT LEQ GT GEQ AND OR ADDASSIGN CAT
+%token NOT EQ NEQ LT LEQ GT GEQ AND OR ADDASSIGN CAT APOSTROPHE
 %token RETURN IF ELSE FOR WHILE INT WITH AS
 /*TYPES*/
-%token BOOL FLOAT VOID STRING
-%token <int> LITERAL
+%token BOOL FLOAT VOID STRING CHAR
+%token <int> LITERAL CHARLIT
 %token <bool> BLIT
 %token <string> ID FLIT STRLIT
 %token EOF
@@ -54,11 +54,12 @@ formal_list:
   | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
 typ:
-    INT   { Int   }
-  | BOOL  { Bool  }
-  | FLOAT { Float }
-  | VOID  { Void  }
-  | STRING{ String}
+    INT   { Int    }
+  | BOOL  { Bool   }
+  | FLOAT { Float  }
+  | VOID  { Void   }
+  | STRING{ String }
+  | CHAR  { Char   }
 
 
 vdecl_list:
@@ -94,6 +95,7 @@ expr:
   | FLIT	           { Fliteral($1)           }
   | BLIT             { BoolLit($1)            }
   | ID               { Id($1)                 }
+  | CHARLIT          { CharLiteral($1)        }
   | STRLIT           { StrLiteral ($1)        }
   | expr CAT    expr { Binop($1, Charat,$3)   }  
   | expr PLUS   expr { Binop($1, Add,   $3)   }
