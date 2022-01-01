@@ -1,0 +1,21 @@
+//no leak reported by valgrind for all nested  context managers
+
+int main(){
+	str s;
+	int i;
+	char c;
+	str m;
+	str f;
+	with s as ("hello"){
+		with m as ("^^^the char outputted should be (l)^^^"){
+			c = (s@2);
+			printc(c);
+			prints(m);
+			with f as ("hi"){
+				i = 4;
+			}
+
+		}
+	}
+return 0;
+}
