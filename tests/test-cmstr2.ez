@@ -8,7 +8,6 @@ int main(){
 	str f;
 	with s as ("hello"){
 		with m as ("^^^the char outputted should be (l)^^^"){
-			c = (s@2);
 			printc(c);
 			prints(m);
 			with f as ("hi"){
