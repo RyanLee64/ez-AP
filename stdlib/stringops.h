@@ -5,7 +5,7 @@ char *createstr(char *input);
 
 char *concatstrs(const char *str1, const char* str2);
 
-char *charatstr(const char* str1, int i);
+char charatstr(const char* str1, int i);
 
 char checkstreq(const char *str1, const char *str2);
 

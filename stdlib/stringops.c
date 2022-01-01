@@ -19,7 +19,7 @@ char *concatstrs(const char *str1, const char *str2){
 }
 
 //Return a null-terminated string of length 2 with index 0 equal to the char
-char *charatstr(const char *str1, int i ){
+char charatstr(const char *str1, int i ){
     int len = strlen(str1);
     //in the event the user passs an out of bounds integer
     if(i > len){
@@ -30,11 +30,7 @@ char *charatstr(const char *str1, int i ){
     else
     {
         char c = *(str1+i);
-        char *ret = (char *)malloc(2);
-        memset(ret,0, 2);
-        printf("%c\n",c);
-        ret[0] = c;
-        return ret;
+        return c;
     }
 }
 

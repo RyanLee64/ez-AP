@@ -75,7 +75,7 @@ let translate (globals, functions) =
     L.declare_function "concatstrs" add_strs_t the_module in 
   
   let char_at_t: L.lltype = 
-    L.function_type str_t [|str_t; i32_t|] in 
+    L.function_type i8_t [|str_t; i32_t|] in 
   let char_at_func: L.llvalue = 
     L.declare_function "charatstr" char_at_t the_module in 
   
@@ -103,7 +103,8 @@ let translate (globals, functions) =
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
     and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder 
-    and str_format_str = L.build_global_stringptr   "%s\n" "fmt" builder in
+    and str_format_str = L.build_global_stringptr   "%s\n" "fmt" builder 
+    and char_format_str = L.build_global_stringptr  "%c\n"  "fmt" builder in
 
     (* Construct the function's "locals": formal arguments and locally
        declared variables.  Allocate each on the stack, initialize their
@@ -216,6 +217,9 @@ let translate (globals, functions) =
       | SCall ("prints", [e]) ->
     L.build_call printf_func [| str_format_str ; (expr builder e) |]
       "printf" builder 
+      | SCall ("printc", [e]) -> 
+    L.build_call printf_func [| char_format_str; (expr builder e) |]
+      "printf"  builder
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
@@ -279,17 +283,18 @@ let translate (globals, functions) =
           (*store the evaluated resource in our pointer for later and in our symbol tabl*)
           ignore(L.build_store evaluated_resource pointer builder);
           ignore(L.build_store evaluated_resource (lookup s) builder);
-          ignore(L.build_br body_bb builder);
+          ignore( L.build_br body_bb builder);
           
           (*cleanup routine*)
           let builder1 = L.builder_at_end context cleanup_bb in 
 
           let lookup = L.build_load pointer "cleanup_load" builder1 in 
+
           ignore(L.build_free lookup builder1);
           
           (*body routine*)
-          ignore(stmt (L.builder_at_end context body_bb) body); 
-          ignore(L.build_br cleanup_bb (L.builder_at_end context body_bb));
+          let body_builder = L.builder_at_end context body_bb in 
+          ignore(add_terminal (stmt body_builder body) (L.build_br cleanup_bb)); 
   
           (*return the cleanup builder to continue building the module*)
           builder1

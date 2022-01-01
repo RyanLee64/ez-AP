@@ -49,9 +49,10 @@ let check (globals, functions) =
 			                         ("printb", Bool);
                                ("prints", String);
 			                         ("printf", Float);
+                               ("printc", Char);
 			                         ("printbig", Int);
                                ("createstr", String);
-                               ("charat",   String);
+                               ("charat",   Char);
                                ("checkstreq", Bool)]
                                 in
 
@@ -150,7 +151,7 @@ let check (globals, functions) =
                      when same && (t1 = Int || t1 = Float) -> Bool
           | And | Or when same && t1 = Bool -> Bool
           (*charat has a strlit/id on LHS and an int on RHS *)
-          | Charat   when t1 = String && t2 = Int  -> String
+          | Charat   when t1 = String && t2 = Int  -> Char
           | _ -> raise (
 	      Failure ("illegal binary operator " ^
                        string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
