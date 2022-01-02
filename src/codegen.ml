@@ -143,7 +143,7 @@ let translate (globals, functions) =
         let temp = L.build_global_stringptr s "temp_assign_ptr" builder in 
         L.build_call createstr_func [| temp |] "strlit" builder
       | SNoexpr     -> L.const_int i32_t 0
-      | SCharLiteral c -> L.const_int i8_t c 
+      | SCharLiteral c -> L.const_int i8_t (int_of_char c) 
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
@@ -286,18 +286,19 @@ let translate (globals, functions) =
           ignore( L.build_br body_bb builder);
           
           (*cleanup routine*)
-          let builder1 = L.builder_at_end context cleanup_bb in 
+          let cleanup_builder = L.builder_at_end context cleanup_bb in 
 
-          let lookup = L.build_load pointer "cleanup_load" builder1 in 
-
-          ignore(L.build_free lookup builder1);
+          let lookup = L.build_load pointer "cleanup_load" cleanup_builder in 
+          (*here is where we will add conditional behavior for sockets
+          vs strings currently only configured for strings*)
+          ignore(L.build_free lookup cleanup_builder);
           
           (*body routine*)
           let body_builder = L.builder_at_end context body_bb in 
           ignore(add_terminal (stmt body_builder body) (L.build_br cleanup_bb)); 
   
           (*return the cleanup builder to continue building the module*)
-          builder1
+          cleanup_builder
 
         |__-> raise(Failure "semant should have caught that this is not assignable"))
         

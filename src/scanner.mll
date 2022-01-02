@@ -16,14 +16,15 @@ rule token = parse
 |   "/*"       {mult_comment lexbuf}
 |   '"'        {read_string (Buffer.create 17) lexbuf} 
 
-(* |   "socket"   {SOCKET} *)
+ |  "socket"   {SOCKET} 
 
-(*MICRO C TEMPLATE *)
 | '('      { LPAREN }
 | ')'      { RPAREN }
 | '{'      { LBRACE }
 | '}'      { RBRACE }
-| '''      { APOSTROPHE } 
+| '['      { LSQUARE }
+| ']'      { RBRACE }
+| '''      { read_first_char (Buffer.create 1) lexbuf } 
 | ';'      { SEMI }
 | ','      { COMMA }
 | '+'      { PLUS }
@@ -92,3 +93,21 @@ and read_string buf =
   | _ { raise (SyntaxError ("Illegal string character: " ^ Lexing.lexeme lexbuf)) }
   | eof { raise (SyntaxError ("String is not terminated")) }
 
+and read_first_char buf = 
+  parse
+   '''        {raise (SyntaxError ("No char provided"))} (* char is EXACTLY one char no more no less*)
+  | '\\' '/'  { Buffer.add_char buf '/'; read_apostrophe buf lexbuf }
+  | '\\' '\\' { Buffer.add_char buf '\\'; read_apostrophe buf lexbuf }
+  | '\\' 'b'  { Buffer.add_char buf '\b'; read_apostrophe buf lexbuf }
+  | '\\' 'f'  { Buffer.add_char buf '\012';read_apostrophe buf lexbuf }
+  | '\\' 'n'  { Buffer.add_char buf '\n'; read_apostrophe buf lexbuf }
+  | '\\' 'r'  { Buffer.add_char buf '\r'; read_apostrophe buf lexbuf }
+  | '\\' 't'  { Buffer.add_char buf '\t'; read_apostrophe buf lexbuf }
+  | [^ '\\']  { Buffer.add_char buf (Lexing.lexeme_char lexbuf 0);
+                read_apostrophe buf lexbuf }
+  | eof       { raise (SyntaxError ("Char is not terminated"))}
+
+and read_apostrophe buf = 
+  parse
+    '''       {CHARLIT (Buffer.nth buf 0)}
+  | _         {raise (SyntaxError ("Extraneous extra chars provided to a char literal"))}
