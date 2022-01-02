@@ -61,6 +61,7 @@ typ:
   | VOID  { Void   }
   | STRING{ String }
   | CHAR  { Char   }
+  | SOCKET{ Socket }
   /*| SOCKET{ Sock   }*/  
 
 
@@ -84,7 +85,7 @@ stmt:
   | FOR LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN stmt
                                             { For($3, $5, $7, $9)   }
   | WHILE LPAREN expr RPAREN stmt           { While($3, $5)         }
-  | WITH expr AS LPAREN expr RPAREN stmt    { Context($2, $5, $7)   } 
+  | WITH expr AS LPAREN expr RPAREN stmt    { Context($2, $5, $7)   }
 
 
 
@@ -119,6 +120,8 @@ expr:
   | ID LPAREN args_opt RPAREN { Call($1, $3)  }
   | LPAREN expr RPAREN { $2                   }
   | ID ADDASSIGN expr { PAssign($1, $3)       }
+  | LSQUARE expr COMMA expr RSQUARE { Sock($2, $4)   } 
+
 
 
 

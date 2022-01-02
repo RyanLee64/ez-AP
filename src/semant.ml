@@ -115,6 +115,12 @@ let check (globals, functions) =
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
       | CharLiteral c -> (Char, SCharLiteral c)
+      | Sock(e1, e2) -> 
+        let (t1, _) = expr e1 and
+        (t2, _) = expr e2 in 
+        if(t1=Char && t2=Int) then (Socket, SSock(expr e1,expr e2))
+        else(raise(Failure("Invalid socket " ^ "["^string_of_typ t1^", "^
+        string_of_typ t2^"]" ^ "Should be: [Char, Int]")))
       | Assign(var, e) | PAssign(var,e) as ex-> 
           let lt = type_of_identifier var
           and (rt, e') = expr e in

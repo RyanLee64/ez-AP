@@ -5,7 +5,7 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type typ = Int | Bool | Float | Void | String | Char
+type typ = Int | Bool | Float | Void | String | Char | Socket
 
 type bind = typ * string
 
@@ -21,6 +21,7 @@ type expr =
   | Assign of string * expr
   | Call of string * expr list
   | PAssign of string * expr
+  | Sock of  expr * expr
   | Noexpr
 
 type stmt =
@@ -80,6 +81,8 @@ let rec string_of_expr = function
   | Noexpr -> ""
   | PAssign(v, e) -> v ^ " += " ^ string_of_expr e
   | CharLiteral(c) ->  String.make 1 c
+  | Sock(e1, e2) -> string_of_expr e1 ^ "type socket. With desired port number
+  : " ^ string_of_expr e2
 
 let rec string_of_stmt = function
     Block(stmts) ->
@@ -105,6 +108,7 @@ let string_of_typ = function
   | Void -> "void"
   | String -> "string"
   | Char  ->  "char"
+  | Socket -> "socket"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

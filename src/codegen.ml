@@ -27,12 +27,15 @@ let translate (globals, functions) =
      we will generate code *)
   let the_module = L.create_module context "MicroC" in
 
+  let sock_struct = L.struct_type context [|L.i8_type context; L.i32_type context|] in
+
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
   and str_t      = L.pointer_type (L.i8_type context)
+  and sock_t     = L.pointer_type (sock_struct)
   and void_t     = L.void_type   context in
 
   (* Return the LLVM type for a MicroC type *)
@@ -43,7 +46,9 @@ let translate (globals, functions) =
     | A.Void  -> void_t
     | A.String -> str_t
     | A.Char   -> i8_t
+    | A.Socket -> sock_t
   in
+
 
   (* Create a map of global variables after creating each *)
   let global_vars : L.llvalue StringMap.t =
@@ -113,7 +118,7 @@ let translate (globals, functions) =
       let add_formal m (t, n) p = 
         L.set_value_name n p;
 	let local = L.build_alloca (ltype_of_typ t) n builder in
-        ignore (L.build_store p local builder);
+        ignore (L.build_store p local builder);        
 	StringMap.add n local m 
 
       (* Allocate space for any locally declared variables and add the
@@ -144,6 +149,10 @@ let translate (globals, functions) =
         L.build_call createstr_func [| temp |] "strlit" builder
       | SNoexpr     -> L.const_int i32_t 0
       | SCharLiteral c -> L.const_int i8_t (int_of_char c) 
+      | SSock(e1, e2) -> let sock = L.build_alloca sock_struct "socket" builder in 
+      (*let sock_typ = L.build_gep sock [|L.const_int i32_t 0; L.const_int i32_t 0|] in *)
+      sock
+
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'

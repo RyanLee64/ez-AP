@@ -15,6 +15,7 @@ and sx =
   | SAssign of string * sexpr
   | SPAssign of string * sexpr
   | SCall of string * sexpr list
+  | SSock of sexpr * sexpr
   | SNoexpr
 
 type sstmt =
@@ -46,6 +47,8 @@ let rec string_of_sexpr (t, e) =
   | SFliteral(l) -> l
   | SCharLiteral(c) -> String.make 1 c
   | SId(s) -> s
+  | SSock(e1,e2) -> string_of_sexpr e1 ^ 
+  "type socket. With desired port number : " ^ string_of_sexpr e2	
   | SStrLiteral s -> s
   | SBinop(e1, o, e2) ->
       string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
@@ -55,7 +58,7 @@ let rec string_of_sexpr (t, e) =
   | SCall(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
   | SNoexpr -> ""
-				  ) ^ ")"				     
+				  ) ^ ")"	
 
 let rec string_of_sstmt = function
     SBlock(stmts) ->

@@ -12,18 +12,18 @@ let whitespace = whitespace_chars | newline
 rule token = parse 
     whitespace {token lexbuf} (*eat whitespace*)
 (*comments/strings*)
-|   "//"       {s_comment lexbuf}
-|   "/*"       {mult_comment lexbuf}
-|   '"'        {read_string (Buffer.create 17) lexbuf} 
+| "//"      {s_comment lexbuf}
+| "/*"      {mult_comment lexbuf}
+| '"'       {read_string (Buffer.create 17) lexbuf} 
 
- |  "socket"   {SOCKET} 
+| "socket" {SOCKET} 
 
 | '('      { LPAREN }
 | ')'      { RPAREN }
 | '{'      { LBRACE }
 | '}'      { RBRACE }
 | '['      { LSQUARE }
-| ']'      { RBRACE }
+| ']'      { RSQUARE }
 | '''      { read_first_char (Buffer.create 1) lexbuf } 
 | ';'      { SEMI }
 | ','      { COMMA }
