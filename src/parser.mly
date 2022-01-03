@@ -100,7 +100,6 @@ expr:
   | ID               { Id($1)                 }
   | CHARLIT          { CharLiteral($1)        }
   | STRLIT           { StrLiteral ($1)        }
-  /*| SOCKLIT          { SockLiteral ($1)}*/
   | expr CAT    expr { Binop($1, Charat,$3)   }  
   | expr PLUS   expr { Binop($1, Add,   $3)   }
   | expr MINUS  expr { Binop($1, Sub,   $3)   }

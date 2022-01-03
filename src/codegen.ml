@@ -48,7 +48,7 @@ let translate (globals, functions) =
     | A.Char   -> i8_t
     | A.Socket -> sock_t_ptr
   in
-  
+
   (*fill out the body of our socket struct type*)
   ignore(L.struct_set_body sock_t [|i8_t; i32_t|] false);
 
