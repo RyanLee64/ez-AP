@@ -35,6 +35,7 @@ let translate (globals, functions) =
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
+  and fd_t       = L.pointer_type(L.i32_type context)
   and str_t      = L.pointer_type (L.i8_type context)
   and void_t     = L.void_type   context in
 
@@ -50,7 +51,7 @@ let translate (globals, functions) =
   in
 
   (*fill out the body of our socket struct type*)
-  ignore(L.struct_set_body sock_t [|i8_t; i32_t|] false);
+  ignore(L.struct_set_body sock_t [|i8_t; i32_t; i32_t|] false);
 
 
   (* Create a map of global variables after creating each *)
@@ -90,7 +91,12 @@ let translate (globals, functions) =
   let check_str_eq_t: L.lltype = 
     L.function_type i1_t [|str_t; str_t|] in 
   let check_str_func: L.llvalue = 
-    L.declare_function "checkstreq" check_str_eq_t the_module in 
+    L.declare_function "checkstreq" check_str_eq_t the_module in
+
+  let create_t: L.lltype = 
+    L.function_type void_t [|sock_t_ptr|] in 
+  let create_func: L.llvalue = 
+    L.declare_function "ez_create" create_t the_module in
 
 
   (* Define each function (arguments and return type) so we can 
@@ -155,14 +161,20 @@ let translate (globals, functions) =
       | SSock(e1, e2) -> let sock = L.build_alloca sock_t "socket" builder in 
           let e1' = expr builder e1 in
           let e2' = expr builder e2 in 
-          (*get pointer to first/second element of socket struct a.k.a. connection type/port #*)
+          (*get pointer to first/second/third element of socket struct 
+          a.k.a. connection type/port #/socket file descriptor (null intitially)*)
           let connection_typ_ptr = L.build_gep sock [|L.const_int i32_t 0; L.const_int i32_t 0|] "conn_ptr" builder in
           let port_number_ptr = L.build_gep sock [|L.const_int i32_t 0; L.const_int i32_t 1|] "port_ptr" builder in
+          let file_descriptor_ptr = L.build_gep sock [|L.const_int i32_t 0; L.const_int i32_t 2|] "file_descrip" builder in
           (*store our calculated values in the allocd struct via the ptrs*)
           ignore(L.build_store e1' connection_typ_ptr builder);
           ignore(L.build_store e2' port_number_ptr builder);
-          (*return the filled out struct*)
-          sock 
+          ignore(L.build_store (L.const_int i32_t 0) file_descriptor_ptr builder);
+          ignore(L.build_call create_func[|sock|] "" builder); 
+          let filled = L.build_load file_descriptor_ptr "fd" builder  in
+          ignore(L.build_call printf_func [| int_format_str; filled |] "printf" builder);
+          sock
+          (*return the filled out struct*) 
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'

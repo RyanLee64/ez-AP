@@ -53,7 +53,8 @@ let check (globals, functions) =
 			                         ("printbig", Int);
                                ("createstr", String);
                                ("charat",   Char);
-                               ("checkstreq", Bool)]
+                               ("checkstreq", Bool);
+                               ("ez_create", Void)]
                                 in
 
   (* Add function name to symbol table *)
