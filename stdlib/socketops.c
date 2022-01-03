@@ -20,4 +20,21 @@ void ez_create(struct sock *bare_socket){
     }
     printf("socket bound to file descriptor %d\n", fd);
     bare_socket->fd = fd;
+    struct addrinfo hints, *res;
+
+    // first, load up address structs with getaddrinfo():
+
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+    int port = bare_socket->port_num;
+    char port_str[7];
+    sprintf(port_str, "%d", port);
+    if(getaddrinfo(NULL, port_str, &hints, &res) != 0){
+        die("invalid port passed");
+    }
+    // bind it to the port we passed in to getaddrinfo():
+    if(bind(fd, res->ai_addr, res->ai_addrlen) < 0) die("bind failed");
+
 }
