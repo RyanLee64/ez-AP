@@ -27,7 +27,8 @@ let translate (globals, functions) =
      we will generate code *)
   let the_module = L.create_module context "MicroC" in
 
-  let sock_struct = L.struct_type context [|L.i8_type context; L.i32_type context|] in
+  let sock_t = L.named_struct_type context "sock_struct" in 
+  let sock_t_ptr = L.pointer_type sock_t in 
 
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
@@ -35,7 +36,6 @@ let translate (globals, functions) =
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
   and str_t      = L.pointer_type (L.i8_type context)
-  and sock_t     = L.pointer_type (sock_struct)
   and void_t     = L.void_type   context in
 
   (* Return the LLVM type for a MicroC type *)
@@ -46,8 +46,11 @@ let translate (globals, functions) =
     | A.Void  -> void_t
     | A.String -> str_t
     | A.Char   -> i8_t
-    | A.Socket -> sock_t
+    | A.Socket -> sock_t_ptr
   in
+  
+  (*fill out the body of our socket struct type*)
+  ignore(L.struct_set_body sock_t [|i8_t; i32_t|] false);
 
 
   (* Create a map of global variables after creating each *)
@@ -149,10 +152,17 @@ let translate (globals, functions) =
         L.build_call createstr_func [| temp |] "strlit" builder
       | SNoexpr     -> L.const_int i32_t 0
       | SCharLiteral c -> L.const_int i8_t (int_of_char c) 
-      | SSock(e1, e2) -> let sock = L.build_alloca sock_struct "socket" builder in 
-      (*let sock_typ = L.build_gep sock [|L.const_int i32_t 0; L.const_int i32_t 0|] in *)
-      sock
-
+      | SSock(e1, e2) -> let sock = L.build_alloca sock_t "socket" builder in 
+          let e1' = expr builder e1 in
+          let e2' = expr builder e2 in 
+          (*get pointer to first/second element of socket struct a.k.a. connection type/port #*)
+          let connection_typ_ptr = L.build_gep sock [|L.const_int i32_t 0; L.const_int i32_t 0|] "conn_ptr" builder in
+          let port_number_ptr = L.build_gep sock [|L.const_int i32_t 0; L.const_int i32_t 1|] "port_ptr" builder in
+          (*store our calculated values in the allocd struct via the ptrs*)
+          ignore(L.build_store e1' connection_typ_ptr builder);
+          ignore(L.build_store e2' port_number_ptr builder);
+          (*return the filled out struct*)
+          sock 
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
