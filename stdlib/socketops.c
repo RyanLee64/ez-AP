@@ -36,5 +36,33 @@ void ez_create(struct sock *bare_socket){
     }
     // bind it to the port we passed in to getaddrinfo():
     if(bind(fd, res->ai_addr, res->ai_addrlen) < 0) die("bind failed");
+    freeaddrinfo(res);
 
+
+}
+
+void ez_connect(struct sock *unconnected_socket, char *address, int port){
+    struct addrinfo hints, *res;
+    int sockfd;
+
+    // first, load up address structs with getaddrinfo():
+
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+
+    char remote_port_str[7];
+
+
+    sprintf(remote_port_str, "%d", port);
+    getaddrinfo(address, remote_port_str, &hints, &res);
+
+    sockfd = unconnected_socket->fd;
+
+    // connect!
+
+    if(connect(sockfd, res->ai_addr, res->ai_addrlen) < 0) die("connect failed");
+    freeaddrinfo(res);
 }

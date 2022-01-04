@@ -9,6 +9,6 @@ struct sock{
 
 void ez_create(struct sock *);
 
-
+void ez_connect(struct sock *unconnected_socket, char *address, int port);
 
 #endif

@@ -98,6 +98,11 @@ let translate (globals, functions) =
   let create_func: L.llvalue = 
     L.declare_function "ez_create" create_t the_module in
 
+  let connect_t: L.lltype = 
+    L.function_type void_t [|sock_t_ptr; str_t; i32_t|] in 
+  let connect_func: L.llvalue = 
+    L.declare_function "ez_connect" connect_t the_module in
+
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -251,6 +256,10 @@ let translate (globals, functions) =
       | SCall ("printc", [e]) -> 
     L.build_call printf_func [| char_format_str; (expr builder e) |]
       "printf"  builder
+      | SCall ("connect", lst) ->
+    L.build_call connect_func [|(expr builder (List.nth lst 0));
+    (expr builder (List.nth lst 1));(expr builder (List.nth lst 2)) |]
+      "" builder 
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in

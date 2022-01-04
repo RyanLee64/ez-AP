@@ -39,6 +39,7 @@ let check (globals, functions) =
         (*janky pattern match will fix time permitting*)
         match name with
         "createstr" | "charat" -> [(ty,"x1");(ty,"x2")] 
+        |"connect"-> [(Socket,"x1");(String,"x2");(Int,"x3")]
         |_           -> [(ty,"x")] in 
       StringMap.add name {
       typ = Void;
@@ -54,6 +55,7 @@ let check (globals, functions) =
                                ("createstr", String);
                                ("charat",   Char);
                                ("checkstreq", Bool);
+                               ("connect", Void);
                                ("ez_create", Void)]
                                 in
 
