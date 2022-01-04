@@ -1,0 +1,27 @@
+int main(){
+	//declarations
+	socket s;
+	str terminate;
+	str url;
+	str request;
+	char c;
+	str inbound;
+
+	with url as (read()){		
+	with request as ("GET /index.html HTTP/1.0\n\n"){		
+	with s as  (['c',1304]){
+
+		connect(s, url, 80);
+
+
+		send(s, request);
+		with inbound as (recv(s)){
+
+			prints(inbound);
+				
+	}
+	}
+	}
+	}
+	return 0;
+}
