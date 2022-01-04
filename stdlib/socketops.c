@@ -71,3 +71,13 @@ void ez_send(struct sock *connected_socket, const char *message){
     int length = strlen(message);
     if(send(connected_socket->fd, message, length, 0) < 0) die("send failed");
 }
+
+char *ez_recv(struct sock *connected_socket){
+    char buf[4096];
+    memset(buf,0,sizeof(buf));
+    recv(connected_socket->fd, buf, sizeof(buf), 0);
+    int recieved_length = strlen(buf);
+    char *ret = (char *) malloc(recieved_length+1);
+    strcpy(ret, buf);
+    return ret;
+}

@@ -35,7 +35,6 @@ let translate (globals, functions) =
   and i8_t       = L.i8_type     context
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
-  and fd_t       = L.pointer_type(L.i32_type context)
   and str_t      = L.pointer_type (L.i8_type context)
   and void_t     = L.void_type   context in
 
@@ -108,6 +107,10 @@ let translate (globals, functions) =
   let send_func: L.llvalue = 
     L.declare_function "ez_send" send_t the_module in
 
+  let recv_t: L.lltype = 
+    L.function_type str_t [|sock_t_ptr|] in 
+  let recv_func: L.llvalue = 
+    L.declare_function "ez_recv" recv_t the_module in 
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -268,7 +271,10 @@ let translate (globals, functions) =
       | SCall ("send", lst) ->
     L.build_call send_func [|(expr builder (List.nth lst 0));
     (expr builder (List.nth lst 1))|]
-        "" builder  
+        "" builder
+      | SCall ("recv", [e]) ->
+    L.build_call recv_func [|(expr builder e)|]
+        "recvd_data" builder
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
