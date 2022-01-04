@@ -66,3 +66,8 @@ void ez_connect(struct sock *unconnected_socket, char *address, int port){
     if(connect(sockfd, res->ai_addr, res->ai_addrlen) < 0) die("connect failed");
     freeaddrinfo(res);
 }
+
+void ez_send(struct sock *connected_socket, const char *message){
+    int length = strlen(message);
+    if(send(connected_socket->fd, message, length, 0) < 0) die("send failed");
+}

@@ -103,6 +103,11 @@ let translate (globals, functions) =
   let connect_func: L.llvalue = 
     L.declare_function "ez_connect" connect_t the_module in
 
+  let send_t: L.lltype = 
+    L.function_type void_t [|sock_t_ptr; str_t|] in 
+  let send_func: L.llvalue = 
+    L.declare_function "ez_send" send_t the_module in
+
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -259,7 +264,11 @@ let translate (globals, functions) =
       | SCall ("connect", lst) ->
     L.build_call connect_func [|(expr builder (List.nth lst 0));
     (expr builder (List.nth lst 1));(expr builder (List.nth lst 2)) |]
-      "" builder 
+      "" builder
+      | SCall ("send", lst) ->
+    L.build_call send_func [|(expr builder (List.nth lst 0));
+    (expr builder (List.nth lst 1))|]
+        "" builder  
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in

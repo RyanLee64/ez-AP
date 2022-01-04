@@ -11,4 +11,6 @@ void ez_create(struct sock *);
 
 void ez_connect(struct sock *unconnected_socket, char *address, int port);
 
+void ez_send(struct sock *connected_socket, const char *message);
+
 #endif

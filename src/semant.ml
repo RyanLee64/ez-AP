@@ -38,8 +38,9 @@ let check (globals, functions) =
       let formals = 
         (*janky pattern match will fix time permitting*)
         match name with
-        "createstr" | "charat" -> [(ty,"x1");(ty,"x2")] 
+        "createstr" | "charat" -> [(String,"x1");(String,"x2")] 
         |"connect"-> [(Socket,"x1");(String,"x2");(Int,"x3")]
+        |"send"   -> [(Socket,"x1");(String,"x2")]
         |_           -> [(ty,"x")] in 
       StringMap.add name {
       typ = Void;
@@ -56,7 +57,8 @@ let check (globals, functions) =
                                ("charat",   Char);
                                ("checkstreq", Bool);
                                ("connect", Void);
-                               ("ez_create", Void)]
+                               ("ez_create", Void);
+                               ("send", Void)]
                                 in
 
   (* Add function name to symbol table *)
