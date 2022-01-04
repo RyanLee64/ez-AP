@@ -224,10 +224,10 @@ let check (globals, functions) =
         and (t2, _) = expr e2 in
         let same = t1 = t2 in
           (match (t1,e1') with 
-          (String, (SId _) ) -> 
+          (String, (SId _) ) | (Socket, (SId _) ) -> 
             (match (t2) with
             (*TODO ADD SOCKET ONCE SOCKET IS BUILT OUT*)
-              String ->  if same then SContext(expr e1, expr e2, check_stmt s) else 
+              String | Socket ->  if same then SContext(expr e1, expr e2, check_stmt s) else 
                 raise(Failure "type of resource and variable do not match")
               |_-> raise(Failure "resource expression must evaluate to a socket or str"))
             |_-> raise(Failure "must assign expression to an id of type socket or str"))

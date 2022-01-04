@@ -196,8 +196,6 @@ let translate (globals, functions) =
           ignore(L.build_store e2' port_number_ptr builder);
           ignore(L.build_store (L.const_int i32_t 0) file_descriptor_ptr builder);
           ignore(L.build_call create_func[|sock|] "" builder); 
-          let filled = L.build_load file_descriptor_ptr "fd" builder  in
-          ignore(L.build_call printf_func [| int_format_str; filled |] "printf" builder);
           sock
           (*return the filled out struct*) 
       | SId s       -> L.build_load (lookup s) s builder

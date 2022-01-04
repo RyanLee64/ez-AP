@@ -18,7 +18,6 @@ void ez_create(struct sock *bare_socket){
     if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 	    die("failure to create a socket file descriptor");
     }
-    printf("socket bound to file descriptor %d\n", fd);
     bare_socket->fd = fd;
     struct addrinfo hints, *res;
 

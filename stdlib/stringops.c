@@ -45,7 +45,7 @@ char *readstr(){
     char buf[16384];
     memset(buf,0,sizeof(buf));
     fgets(buf, 16384, stdin);
-    char *ret = (char *)malloc(strlen(buf));
+    char *ret = (char *)malloc(strlen(buf)+1);
     strcpy(ret, buf);
     return ret;
 
