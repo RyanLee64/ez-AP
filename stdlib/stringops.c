@@ -39,6 +39,22 @@ char checkstreq(const char *str1, const char *str2){
     else return 1;
 }
 
+char *readstr(){
+    /*artificial limit of 16k impossed on reading time permitting add 
+    more flexible read support*/
+    char buf[16384];
+    memset(buf,0,sizeof(buf));
+    fgets(buf, 16384, stdin);
+    char *ret = (char *)malloc(strlen(buf));
+    strcpy(ret, buf);
+    return ret;
+
+}
+
+void writestr(const char *towrite){
+    //implement later if time permits
+}
+
 
 
 

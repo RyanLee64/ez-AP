@@ -111,6 +111,18 @@ let translate (globals, functions) =
     L.function_type str_t [|sock_t_ptr|] in 
   let recv_func: L.llvalue = 
     L.declare_function "ez_recv" recv_t the_module in 
+  
+  let write_t: L.lltype = 
+    L.function_type void_t [|str_t|] in 
+  let write_func: L.llvalue = 
+    L.declare_function "writestr" write_t the_module in 
+  
+  let read_t: L.lltype = 
+    L.function_type str_t [| |] in 
+  let read_func: L.llvalue = 
+    L.declare_function "readstr" read_t the_module in 
+  
+  
 
   (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -275,6 +287,10 @@ let translate (globals, functions) =
       | SCall ("recv", [e]) ->
     L.build_call recv_func [|(expr builder e)|]
         "recvd_data" builder
+      | SCall ("write", [e]) -> 
+    L.build_call write_func [|expr builder e|] "" builder
+      | SCall ("read", _ ) -> 
+    L.build_call read_func [| |] "readstr" builder
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
 	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
