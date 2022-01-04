@@ -80,3 +80,9 @@ char *ez_recv(struct sock *connected_socket){
     strcpy(ret, buf);
     return ret;
 }
+
+void ez_close(struct sock *connected_socket){
+    int fd = connected_socket->fd;
+    close(fd);
+
+}

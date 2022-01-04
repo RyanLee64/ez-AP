@@ -68,6 +68,7 @@ let check (globals, functions) =
                                ("send", Void);
                                ("recv", String);
                                ("read", String);
+                               ("close", Socket);
                                ("write", String)]
                                 in
 

@@ -15,4 +15,6 @@ void ez_send(struct sock *connected_socket, const char *message);
 
 char *ez_recv(struct sock *connected_socket);
 
+void ez_close(struct sock *connected_socket);
+
 #endif

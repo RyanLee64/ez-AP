@@ -102,6 +102,11 @@ let translate (globals, functions) =
   let connect_func: L.llvalue = 
     L.declare_function "ez_connect" connect_t the_module in
 
+  let close_t: L.lltype = 
+    L.function_type void_t [|sock_t_ptr|] in 
+  let close_func: L.llvalue = 
+    L.declare_function "ez_close" close_t the_module in
+  
   let send_t: L.lltype = 
     L.function_type void_t [|sock_t_ptr; str_t|] in 
   let send_func: L.llvalue = 
@@ -360,7 +365,11 @@ let translate (globals, functions) =
           let lookup = L.build_load pointer "cleanup_load" cleanup_builder in 
           (*here is where we will add conditional behavior for sockets
           vs strings currently only configured for strings*)
-          ignore(L.build_free lookup cleanup_builder);
+
+          (*we have to free strings*)
+          ignore(
+            if typ = String then L.build_free lookup cleanup_builder
+            else L.build_call close_func [|lookup|] "" cleanup_builder);
           
           (*body routine*)
           let body_builder = L.builder_at_end context body_bb in 
