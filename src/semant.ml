@@ -41,9 +41,16 @@ let check (globals, functions) =
         "createstr" | "charat" -> [(String,"x1");(String,"x2")] 
         |"connect"-> [(Socket,"x1");(String,"x2");(Int,"x3")]
         |"send"   -> [(Socket,"x1");(String,"x2")]
+        |"recv"   -> [(Socket, "x1")]
         |_           -> [(ty,"x")] in 
       StringMap.add name {
-      typ = Void;
+      typ = 
+      (match name with
+      "createstr" -> String
+      |"charat" ->   Char
+      |"checkstreq" -> Bool
+      |"recv" -> String
+      | _ -> Void);
       fname = name; 
       formals = formals;
       locals = []; body = [] } map
@@ -58,7 +65,8 @@ let check (globals, functions) =
                                ("checkstreq", Bool);
                                ("connect", Void);
                                ("ez_create", Void);
-                               ("send", Void)]
+                               ("send", Void);
+                               ("recv", String)]
                                 in
 
   (* Add function name to symbol table *)
