@@ -1,4 +1,4 @@
-# "make test" Compiles everything and runs the regression tests
+# "make" Compiles everything and runs the regression tests
 LIB = ./stdlib
 TEST = ./tests
 SRC = ./src
@@ -6,20 +6,18 @@ EXE = /usr/local/myFileVer1
 
 
 .PHONY : test
-test : all 
+test : compiler
 	cd $(TEST) && ./testall.sh
 
-# "make all" builds the executable as well as the "printbig" library designed
-# to test linking external code
+# "make compiler" builds the executable as well as the "stdlib" library 
 
-.PHONY : all
-all : clean
+.PHONY : compiler
+compiler : clean
 	cd $(SRC) && dune build
 	ln -s ./_build/default/src/ezap.exe ezap.exe
 	cd $(LIB) && make
 
 
-# "make microc.native" compiles the compiler
 #
 # The _tags file controls the operation of ocamlbuild, e.g., by including
 # packages, enabling warnings
