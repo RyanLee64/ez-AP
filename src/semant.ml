@@ -1,4 +1,4 @@
-(* Semantic checking for the MicroC compiler *)
+(* Semantic checking for the ezap compiler *)
 
 open Ast
 open Sast
@@ -55,21 +55,21 @@ let check (globals, functions) =
       formals = formals;
       locals = []; body = [] } map
     in List.fold_left add_bind StringMap.empty [ ("print", Int);
-			                         ("printb", Bool);
-                               ("prints", String);
-			                         ("printf", Float);
-                               ("printc", Char);
-			                         ("printbig", Int);
-                               ("createstr", String);
-                               ("charat",   Char);
-                               ("checkstreq", Bool);
-                               ("connect", Void);
-                               ("ez_create", Void);
-                               ("send", Void);
-                               ("recv", String);
-                               ("read", String);
-                               ("close", Socket);
-                               ("write", String)]
+                                               ("printb", Bool);
+                                               ("prints", String);
+                                               ("printf", Float);
+                                               ("printc", Char);
+                                               ("printbig", Int);
+                                               ("createstr", String);
+                                               ("charat",   Char);
+                                               ("checkstreq", Bool);
+                                               ("connect", Void);
+                                               ("ez_create", Void);
+                                               ("send", Void);
+                                               ("recv", String);
+                                               ("read", String);
+                                               ("close", Socket);
+                                               ("write", String)]
                                 in
 
   (* Add function name to symbol table *)

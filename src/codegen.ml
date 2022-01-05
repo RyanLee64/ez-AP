@@ -25,7 +25,7 @@ let translate (globals, functions) =
   
   (* Create the LLVM compilation module into which
      we will generate code *)
-  let the_module = L.create_module context "MicroC" in
+  let the_module = L.create_module context "ezap" in
 
   let sock_t = L.named_struct_type context "sock_struct" in 
   let sock_t_ptr = L.pointer_type sock_t in 
@@ -38,7 +38,7 @@ let translate (globals, functions) =
   and str_t      = L.pointer_type (L.i8_type context)
   and void_t     = L.void_type   context in
 
-  (* Return the LLVM type for a MicroC type *)
+  (* Return the LLVM type for a ezap type *)
   let ltype_of_typ = function
       A.Int   -> i32_t
     | A.Bool  -> i1_t
@@ -62,6 +62,7 @@ let translate (globals, functions) =
       in StringMap.add n (L.define_global n init the_module) m in
     List.fold_left global_var StringMap.empty globals in
 
+  (* External function declarations  *)
   let printf_t : L.lltype = 
       L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue = 
@@ -207,6 +208,7 @@ let translate (globals, functions) =
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
       | SPAssign (s, e) -> 
+        (* leverage concat logic for SPAssign*)
         let old_str = L.build_load (lookup s) s builder in 
         let e' = expr builder e in 
         let new_str  = L.build_call add_strs_func[|old_str; e'|] "strcat" builder in 

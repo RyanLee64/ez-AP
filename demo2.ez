@@ -9,7 +9,7 @@ int main(){
 
 	with url as (read()){		
 	with request as ("GET /index.html HTTP/1.0\n\n"){		
-	with s as  (['c',1304]){
+	with s as  (['c',1305]){
 
 		connect(s, url, 80);
 

@@ -1,8 +1,8 @@
 int main(){
 	str s;
-	str i;
+	char i;
 	s = "helloo";
 	i = s@2;
-	prints(i);
+	printc(i);
 	return 0;
 }

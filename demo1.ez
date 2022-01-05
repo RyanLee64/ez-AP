@@ -1,5 +1,4 @@
-//no leak reported by valgrind for all nested  context managers
-
+//simple chat application that interfaces with netcat
 int main(){
 	//declarations
 	socket s;
@@ -10,10 +9,12 @@ int main(){
 	str inbound;
 	str outbound;
 	str addr;
+
 	cmp = 1;
-		
+
 	with s as  (['c',1304]){
 	with addr as ("127.0.0.1"){
+
 	connect(s,addr, 1250);
 
 	with terminate as ("end\n"){

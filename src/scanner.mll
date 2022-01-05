@@ -1,4 +1,4 @@
-(* Scanner for ezAP language*)
+(* Scanner for ezap language*)
 {
 open Parser
 exception SyntaxError of string
