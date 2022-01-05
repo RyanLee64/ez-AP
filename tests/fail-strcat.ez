@@ -1,0 +1,11 @@
+int main(){
+
+	str s;
+	int i;
+	str t;
+	s = "hello";
+	i = 5;
+	//bad operands
+	t = s+i;
+	return 1;
+}

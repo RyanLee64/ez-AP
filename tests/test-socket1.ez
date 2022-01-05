@@ -1,0 +1,5 @@
+int main(){
+	socket s;
+	s = ['c',1300];
+	return 0;
+}

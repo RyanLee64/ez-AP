@@ -1,0 +1,25 @@
+//simple chat application that interfaces with netcat
+int main(){
+	//declarations
+	socket s;
+	str terminate;
+	char c;
+	bool b;
+	int cmp;
+	str inbound;
+	str outbound;
+	str addr;
+
+	cmp = 1;
+
+	with s as  (['c',1304]){
+	with addr as ("127.0.0.1"){
+
+
+	with terminate as ("end\n"){
+				
+	}
+	}
+	}
+	return 0;
+}

@@ -1,0 +1,11 @@
+int main(){
+
+	str s;
+	str v;
+	s = "hello";
+	v = " world";
+	s += v;
+	//print hello world
+	prints(s);
+	return 0;
+}

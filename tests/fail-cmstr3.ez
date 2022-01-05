@@ -1,0 +1,9 @@
+int main(){
+	socket s;
+	int i;
+	//types must match
+	with s as ("hello"){
+		i = 5;	
+	}
+	return 1;
+}

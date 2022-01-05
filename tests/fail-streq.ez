@@ -1,0 +1,10 @@
+int main(){
+	str s;
+	int v;
+	
+	s = "hi";
+	v = 5;
+	//bad opearand
+	s == v;	
+	return 1;
+}

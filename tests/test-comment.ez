@@ -1,0 +1,4 @@
+int main(){
+	//example of single line comment
+	return 0;
+}
