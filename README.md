@@ -17,3 +17,9 @@ opam install llvm ocamlbuild
 eval $(opam env)
 ```
 The above installation assumes a clean copy of Ubuntu 20.0.4 and is current as of 1/4/22. Additionally if you choose to configure opam beyond the deault settigs during ```opam init``` the last line will not be necessary. 
+
+## Using the ezap Compiler
+
+1. In the top-level directory run ```make``` to compile the **ezap** executable, symlink it to the top-level of the ezap directory and run the regression test suite
+2. To just compile the **ezap** compiler run ```make compile```
+3. The **ezap** compiler compiles a **.ez** file to an LLVM IR module and prints it to ```stdout```. If you would like to compile a **.ez** file all the way down to a binary run ```./compile.sh source.ez```
