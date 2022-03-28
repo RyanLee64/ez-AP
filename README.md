@@ -27,4 +27,4 @@ The above installation assumes a clean copy of Ubuntu 20.04.3 and is current as 
 ## Project Resources
 
 * [Final Report](http://www.columbia.edu/~dbl2127/plt/dbl2127_ezap_report.pdf)
-* [Presntation Slides](http://www.columbia.edu/~dbl2127/plt/PLT_FINAL_Presentation.pdf)
+* [Slides](http://www.columbia.edu/~dbl2127/plt/PLT_FINAL_Presentation.pdf)
